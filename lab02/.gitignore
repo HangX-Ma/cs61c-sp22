@@ -1,0 +1,5 @@
+linked_list
+vector
+bit_ops
+*.o
+.gdb_history
