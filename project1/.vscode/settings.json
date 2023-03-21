@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "*.s": "arm",
+        "*.c": "c",
+        "*.cfg": "tcl",
+        "stdio.h": "c",
+        "snake_utils.h": "c"
+    }
+}
