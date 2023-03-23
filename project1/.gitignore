@@ -134,3 +134,6 @@ unit-test-*.snk
 
 # Temp files
 *.tmp
+
+.gdb_history
+.vscode-ctags
