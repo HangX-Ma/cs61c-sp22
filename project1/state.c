@@ -115,28 +115,56 @@ void save_board(game_state_t *state, char *filename) {
 
 /* Task 4.1 */
 static bool is_tail(char c) {
-    // TODO: Implement this function.
-    return true;
+    if (c == SNAKE_TAIL[TAIL_UP] || c == SNAKE_TAIL[TAIL_LEFT] ||
+        c == SNAKE_TAIL[TAIL_RIGHT] || c == SNAKE_TAIL[TAIL_DOWN]) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 static bool is_snake(char c) {
-    // TODO: Implement this function.
-    return true;
+    if (is_tail(c) || /* check tail and body*/
+        c == SNAKE_BODY[BODY_UP] || c == SNAKE_BODY[BODY_LEFT] ||
+        c == SNAKE_BODY[BODY_RIGHT] || c == SNAKE_BODY[BODY_DOWN] ||
+        c == SNAKE_BODY[BODY_DEAD]) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
+/* Call check function first */
 static char body_to_tail(char c) {
-    // TODO: Implement this function.
-    return '?';
+    if (c == SNAKE_BODY[BODY_UP]) {
+        return SNAKE_TAIL[TAIL_UP];
+    } else if (c == SNAKE_BODY[BODY_LEFT]) {
+        return SNAKE_TAIL[TAIL_LEFT];
+    } else if (c == SNAKE_BODY[BODY_RIGHT]) {
+        return SNAKE_TAIL[TAIL_RIGHT];
+    } else if (c == SNAKE_BODY[BODY_DOWN]) {
+        return SNAKE_TAIL[TAIL_DOWN];
+    } else {
+        return '?';
+    }
 }
 
 static int incr_x(char c) {
-    // TODO: Implement this function.
-    return 0;
+    if (c == SNAKE_BODY[BODY_RIGHT] || c == SNAKE_TAIL[TAIL_RIGHT]) {
+        return 1; // right
+    } else if (c == SNAKE_BODY[BODY_LEFT] || c == SNAKE_TAIL[TAIL_LEFT]) {
+        return -1; // left
+    }
+    return 0; // others
 }
 
 static int incr_y(char c) {
-    // TODO: Implement this function.
-    return 0;
+    if (c == SNAKE_BODY[BODY_DOWN] || c == SNAKE_TAIL[TAIL_DOWN]) {
+        return 1; // right
+    } else if (c == SNAKE_BODY[BODY_UP] || c == SNAKE_TAIL[TAIL_UP]) {
+        return -1; // left
+    }
+    return 0; // others
 }
 
 /* Task 4.2 */

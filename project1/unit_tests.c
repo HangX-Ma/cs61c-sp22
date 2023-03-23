@@ -98,33 +98,134 @@ bool assert_state_equals(game_state_t* expected, game_state_t* actual) {
 }
 
 bool test_is_tail() {
-  // TODO: Implement this if you'd like!
-  printf("%s\n", "test_is_tail doesn't have any tests.");
-  return true;
+    if (!assert_true("snake tail", is_tail(SNAKE_TAIL[TAIL_UP]))) {
+        return false;
+    }
+    if (!assert_true("snake tail", is_tail(SNAKE_TAIL[TAIL_LEFT]))) {
+        return false;
+    }
+    if (!assert_true("snake tail", is_tail(SNAKE_TAIL[TAIL_RIGHT]))) {
+        return false;
+    }
+    if (!assert_true("snake tail", is_tail(SNAKE_TAIL[TAIL_DOWN]))) {
+        return false;
+    }
+    if (!assert_true("snake tail", false == is_tail(SNAKE_BODY[BODY_UP]))) {
+        return false;
+    }
+    if (!assert_true("snake tail", false == is_tail('?'))) {
+        return false;
+    }
+    return true;
 }
 
 bool test_is_snake() {
-  // TODO: Implement this if you'd like!
-  printf("%s\n", "test_is_snake doesn't have any tests.");
-  return true;
+    if (!assert_true("snake", is_snake(SNAKE_TAIL[TAIL_UP]))) {
+        return false;
+    }
+    if (!assert_true("snake", is_snake(SNAKE_TAIL[TAIL_LEFT]))) {
+        return false;
+    }
+    if (!assert_true("snake", is_snake(SNAKE_TAIL[TAIL_RIGHT]))) {
+        return false;
+    }
+    if (!assert_true("snake", is_snake(SNAKE_TAIL[TAIL_DOWN]))) {
+        return false;
+    }
+    if (!assert_true("snake", is_snake(SNAKE_BODY[BODY_UP]))) {
+        return false;
+    }
+    if (!assert_true("snake", is_snake(SNAKE_BODY[BODY_LEFT]))) {
+        return false;
+    }
+    if (!assert_true("snake", is_snake(SNAKE_BODY[BODY_RIGHT]))) {
+        return false;
+    }
+    if (!assert_true("snake", is_snake(SNAKE_BODY[BODY_DOWN]))) {
+        return false;
+    }
+    if (!assert_true("snake", is_snake(SNAKE_BODY[BODY_DEAD]))) {
+        return false;
+    }
+    if (!assert_true("snake", false == is_snake('?'))) {
+        return false;
+    }
+    return true;
 }
 
 bool test_body_to_tail() {
-  // TODO: Implement this if you'd like!
-  printf("%s\n", "test_body_to_tail doesn't have any tests.");
-  return true;
+    if (!assert_equals_char("body to tail", SNAKE_TAIL[TAIL_UP], body_to_tail(SNAKE_BODY[BODY_UP]))) {
+        return false;
+    }
+    if (!assert_equals_char("body to tail", SNAKE_TAIL[TAIL_LEFT], body_to_tail(SNAKE_BODY[BODY_LEFT]))) {
+        return false;
+    }
+    if (!assert_equals_char("body to tail", SNAKE_TAIL[TAIL_RIGHT], body_to_tail(SNAKE_BODY[BODY_RIGHT]))) {
+        return false;
+    }
+    if (!assert_equals_char("body to tail", SNAKE_TAIL[TAIL_DOWN], body_to_tail(SNAKE_BODY[BODY_DOWN]))) {
+        return false;
+    }
+    if (!assert_equals_char("body to tail", '?', body_to_tail(SNAKE_BODY[BODY_DEAD]))) {
+        return false;
+    }
+    if (!assert_equals_char("body to tail", '?', body_to_tail(SNAKE_TAIL[TAIL_UP]))) {
+        return false;
+    }
+    if (!assert_equals_char("body to tail", '?', body_to_tail('?'))) {
+        return false;
+    }
+    return true;
 }
 
 bool test_incr_x() {
-  // TODO: Implement this if you'd like!
-  printf("%s\n", "test_incr_x doesn't have any tests.");
-  return true;
+    if (!assert_equals_int("incr_x", 1, incr_x(SNAKE_BODY[BODY_RIGHT]))) {
+        return false;
+    }
+    if (!assert_equals_int("incr_x", 1, incr_x(SNAKE_TAIL[TAIL_RIGHT]))) {
+        return false;
+    }
+    if (!assert_equals_int("incr_x", -1, incr_x(SNAKE_BODY[BODY_LEFT]))) {
+        return false;
+    }
+    if (!assert_equals_int("incr_x", -1, incr_x(SNAKE_TAIL[TAIL_LEFT]))) {
+        return false;
+    }
+    if (!assert_equals_int("incr_x", 0, incr_x(SNAKE_BODY[BODY_UP]))) {
+        return false;
+    }
+    if (!assert_equals_int("incr_x", 0, incr_x(SNAKE_BODY[BODY_DEAD]))) {
+        return false;
+    }
+    if (!assert_equals_int("incr_x", 0, incr_x(SNAKE_TAIL[TAIL_UP]))) {
+        return false;
+    }
+    return true;
 }
 
 bool test_incr_y() {
-  // TODO: Implement this if you'd like!
-  printf("%s\n", "test_incr_y doesn't have any tests.");
-  return true;
+    if (!assert_equals_int("incr_y", 1, incr_y(SNAKE_BODY[BODY_DOWN]))) {
+        return false;
+    }
+    if (!assert_equals_int("incr_y", 1, incr_y(SNAKE_TAIL[TAIL_DOWN]))) {
+        return false;
+    }
+    if (!assert_equals_int("incr_y", -1, incr_y(SNAKE_BODY[BODY_UP]))) {
+        return false;
+    }
+    if (!assert_equals_int("incr_y", -1, incr_y(SNAKE_TAIL[TAIL_UP]))) {
+        return false;
+    }
+    if (!assert_equals_int("incr_y", 0, incr_y(SNAKE_BODY[BODY_LEFT]))) {
+        return false;
+    }
+    if (!assert_equals_int("incr_y", 0, incr_y(SNAKE_BODY[BODY_DEAD]))) {
+        return false;
+    }
+    if (!assert_equals_int("incr_y", 0, incr_y(SNAKE_TAIL[TAIL_LEFT]))) {
+        return false;
+    }
+    return true;
 }
 
 bool test_create_default_state() {
