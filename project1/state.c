@@ -8,6 +8,9 @@
 #define BOARD_ROW (10)
 #define BOARD_COL (14)
 
+const char SNAKE_TAIL[4] = {'w', 'a', 's', 'd'};
+const char SNAKE_BODY[5] = {'^', '<', 'v', '>', 'x'};
+
 /* Helper function definitions */
 static char get_board_at(game_state_t *state, int x, int y);
 static void set_board_at(game_state_t *state, int x, int y, char ch);
@@ -169,20 +172,93 @@ static int incr_y(char c) {
 
 /* Task 4.2 */
 static char next_square(game_state_t *state, int snum) {
-    // TODO: Implement this function.
+    /* snum [0, num_snakes - 1] */
+    if (snum >= state->num_snakes || snum < 0) {
+        printf("snake id incorrect, called by %s at %d\n", __func__, __LINE__);
+        return '?';
+    }
+
+    if (!state->snakes[snum].live) {
+        printf("snake has dead, called by %s at %d\n", __func__, __LINE__);
+        return '?';
+    }
+    /* Get head direction */
+    char head_dir = get_board_at(state, state->snakes[snum].head_x,
+                                 state->snakes[snum].head_y);
+    int dx = incr_x(head_dir);
+    int dy = incr_y(head_dir);
+
+    /* Update */
+    if (dx != 0) {
+        return get_board_at(state,
+                            state->snakes[snum].head_x + incr_x(head_dir),
+                            state->snakes[snum].head_y);
+    } else if (dy != 0) {
+        return get_board_at(state, state->snakes[snum].head_x,
+                            state->snakes[snum].head_y + incr_y(head_dir));
+    }
+
     return '?';
 }
 
 /* Task 4.3 */
 static void update_head(game_state_t *state, int snum) {
-    // TODO: Implement this function.
-    return;
+    if (snum >= state->num_snakes || snum < 0) {
+        printf("snake id incorrect, called by %s at %d\n", __func__, __LINE__);
+        return;
+    }
+
+    if (!state->snakes[snum].live) {
+        printf("snake has dead, called by %s at %d\n", __func__, __LINE__);
+        return;
+    }
+
+    /* Get head direction */
+    int x = state->snakes[snum].head_x;
+    int y = state->snakes[snum].head_y;
+    char head_dir = get_board_at(state, x, y);
+    int dx = incr_x(head_dir);
+    int dy = incr_y(head_dir);
+
+    if (dx != 0) {
+        set_board_at(state, x + dx, y, head_dir);
+        state->snakes[snum].head_x += dx;
+    } else if (dy != 0) {
+        set_board_at(state, x, y + dy, head_dir);
+        state->snakes[snum].head_y += dy;
+    }
 }
 
 /* Task 4.4 */
 static void update_tail(game_state_t *state, int snum) {
-    // TODO: Implement this function.
-    return;
+    if (snum >= state->num_snakes || snum < 0) {
+        printf("snake id incorrect, called by %s at %d\n", __func__, __LINE__);
+        return;
+    }
+
+    if (!state->snakes[snum].live) {
+        printf("snake has dead, called by %s at %d\n", __func__, __LINE__);
+        return;
+    }
+
+    /* Get head direction */
+    int x = state->snakes[snum].tail_x;
+    int y = state->snakes[snum].tail_y;
+    char tail_dir = get_board_at(state, x, y); 
+    set_board_at(state, x, y, ' ');
+
+    int dx = incr_x(tail_dir);
+    int dy = incr_y(tail_dir);
+
+    if (dx != 0) {
+        char next_tail = get_board_at(state, x + dx, y);
+        set_board_at(state, x + dx, y, body_to_tail(next_tail));
+        state->snakes[snum].tail_x += dx;
+    } else if (dy != 0) {
+        char next_tail = get_board_at(state, x, y + dy);
+        set_board_at(state, x, y + dy, body_to_tail(next_tail));
+        state->snakes[snum].tail_y += dy;
+    }
 }
 
 /* Task 4.5 */

@@ -34,19 +34,20 @@ game_state_t* load_board(char* filename);
 typedef enum {
     TAIL_UP,
     TAIL_LEFT,
-    TAIL_RIGHT,
     TAIL_DOWN,
+    TAIL_RIGHT,
 } tail_state_m;
 
 typedef enum {
     BODY_UP,
     BODY_LEFT,
-    BODY_RIGHT,
     BODY_DOWN,
+    BODY_RIGHT,
     BODY_DEAD,
 } body_state_m;
 
-const char SNAKE_TAIL[5] = {'w', 'a', 's', 'd'};
-const char SNAKE_BODY[5] = {'^', '<', '>', 'v', 'x'};
+extern const char SNAKE_TAIL[4];
+extern const char SNAKE_BODY[5];
+
 
 #endif
