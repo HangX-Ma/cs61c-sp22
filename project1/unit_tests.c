@@ -1088,7 +1088,7 @@ bool test_load_board_1() {
   fseek(f, 0, SEEK_END);
   long f_len = ftell(f);
   if (strlen(expected) != f_len) {
-    printf("%s\n", "Your loaded board doesn't match the expected output. See unit-test-out.snk for what you loaded.");
+    printf("%s %d\n", "Your loaded board doesn't match the expected output. See unit-test-out.snk for what you loaded, at", __LINE__);
     fclose(f);
     return false;
   }
@@ -1103,7 +1103,7 @@ bool test_load_board_1() {
   fclose(f);
 
   if (strcmp(expected, actual) != 0) {
-    printf("%s\n", "Your loaded board doesn't match the expected output. See unit-test-out.snk for what you loaded.");
+    printf("%s %d\n", "Your loaded board doesn't match the expected output. See unit-test-out.snk for what you loaded, at", __LINE__);
     return false;
   }
   free(actual);

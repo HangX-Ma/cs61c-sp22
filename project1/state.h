@@ -49,5 +49,4 @@ typedef enum {
 extern const char SNAKE_TAIL[4];
 extern const char SNAKE_BODY[5];
 
-
 #endif

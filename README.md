@@ -11,7 +11,7 @@ This repository records the study progress of CS 61C course. You can take a refe
 
 ## Projects
 
-- [ ] Project 1: snek ([Link](https://inst.eecs.berkeley.edu/~cs61c/sp22/projects/proj1/)) ([Archive link](https://github.com/61c-teach/sp22-proj1-starter))
+- [x] Project 1: snek ([Link](https://inst.eecs.berkeley.edu/~cs61c/sp22/projects/proj1/)) ([Archive link](https://github.com/61c-teach/sp22-proj1-starter))
 
 ## LICENSE
 
