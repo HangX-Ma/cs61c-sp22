@@ -4,7 +4,7 @@ Spec: [https://cs61c.org/sp22/projects/proj1/](https://cs61c.org/sp22/projects/p
 
 I make some tiny mistakes that cause the program encounter weird problems:
 
-- Forget index the snakes `state->snake->live`, which makes only first snake alive.
+- Forget to index the snakes `state->snake->live`, which makes only first snake alive.
 - Wrongly use the function pointer. I actually call the `add_food` function.
 - I write `col` instead of `cow` in two dimensions array dynamic memory allocation, which leads to illegal out of range access.
 
