@@ -101,7 +101,10 @@ main:
 # a1 is the address of the "output" array (defined above).
 f:
     # YOUR CODE GOES HERE!
-
+    addi a0, a0, 3  # add bias to correct the array index
+    slli t0, a0, 2  # 4 byte per word
+    add t0, t0, a1
+    lw a0, 0(t0) # access the value at specific address
     jr ra               # Always remember to jr ra after your function!
 
 # prints out one integer
