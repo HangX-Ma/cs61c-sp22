@@ -38,7 +38,6 @@ read_matrix:
     sw      s4, 24(sp)
     sw      s5, 28(sp)
 
-    # Epilogue
 
     mv      s1, a1  # s1 saves the copy of a1
     mv      s2, a2  # s2 saves the copy of a2
@@ -80,6 +79,8 @@ read_matrix:
     bnez    a0, fclose_error
 
     mv      a0, s5
+
+    # Epilogue
     lw      ra, 4(sp)
     lw      s0, 8(sp)
     lw      s1, 12(sp)
@@ -93,26 +94,21 @@ read_matrix:
 
 # === error handler ===
 malloc_error:
-    # Epilogue
     li      a0, 26
     j       exit
 
 fopen_error:
-    # Epilogue
     li      a0, 27
     j       exit
 
 fclose_error:
-    # Epilogue
     li      a0, 28
     j       exit
 
 fread_error:
-    # Epilogue
     li      a0, 29
     j       exit
 
 matrix_size_error:
-    # Epilogue
     li      a0, 38
     j       exit
