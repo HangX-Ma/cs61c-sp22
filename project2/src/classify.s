@@ -25,32 +25,38 @@
 #   main.s <M0_PATH> <M1_PATH> <INPUT_PATH> <OUTPUT_PATH>
 #
 # Registers:
-#       s1, argument pointer
+#       s1, argument pointer (a1)
 #
 #       s2, m0 matrix address
-#       t1, m0 rows
-#       t2, m0 columns
+#       s11, m0 rows address
+#       s10, m0 columns address
 #
 #       s3, m1 matrix address
-#       t3, m1 rows
-#       t4, m1 columns
+#       s9, m1 rows address
+#       s8, m1 columns address
 #
 #       s4, input matrix address
-#       t5, input rows
-#       t6, input columns
-
+#       s7, input rows address
+#       s6, input columns address
 
 
 classify:
     # Prologue
-    addi    sp, sp, -36
-    sw      s0, 8(sp)
-    sw      s1, 12(sp)
-    sw      s2, 16(sp)
-    sw      s3, 20(sp)
-    sw      s4, 24(sp)
-    sw      s5, 28(sp)
-    sw      ra, 32(sp)
+    addi    sp, sp, -64
+    sw      s0, 12(sp)
+    sw      s1, 16(sp)
+    sw      s2, 20(sp)
+    sw      s3, 24(sp)
+    sw      s4, 28(sp)
+    sw      s5, 32(sp)
+    sw      s6, 36(sp)
+    sw      s7, 40(sp)
+    sw      s8, 44(sp)
+    sw      s9, 48(sp)
+    sw      s10, 52(sp)
+    sw      s11, 56(sp)
+    sw      ra, 60(sp)
+    # Epilogue
 
     # argument number checker
     li      s0, 5
@@ -58,93 +64,120 @@ classify:
 
     mv      s1, a1 # store the argument pointer
     mv      s0, a2 # store print switcher
-
-	# Read pretrained m0, locate at address (a1 + 4)
-    lw      a0, 4(s1)
-    mv      a1, sp # rows
-    addi    a2, sp, 4 # columns
+    
+    # Read pretrained m0, locate at address (a1 + 4)
+    li      a0, 4
+    jal     ra, malloc  # return the pointer to the num of rows of m0
+    beqz    a0, malloc_error
+    mv      s11, a0 # TODO (NEED FREE) s11 stores the m0's rows pointer address
+    li      a0, 4
+    jal     ra, malloc  # return the pointer to the num of column of m0
+    beqz    a0, malloc_error
+    mv      s10, a0 # TODO (NEED FREE) s10 stores the m0's column pointer address
+    # read matrix
+    lw      a0, 4(s1) # a[1]
+    mv      a1, s11 # rows address
+    mv      a2, s10 # columns address
     jal     ra, read_matrix
-    mv      s2, a0 # m0 matrix address
-    lw      t1, 0(sp)
-    lw      t2, 4(sp)
+    mv      s2, a0 # TODO (NEED FREE) s2 stores m0's matrix address
 
 	# Read pretrained m1, locate at address (a1 + 8)
-    lw      a0, 8(s1)
-    mv      a1, sp # rows
-    addi    a2, sp, 4 # columns
+    li      a0, 4
+    jal     ra, malloc  # return the pointer to the num of rows of m1
+    beqz    a0, malloc_error
+    mv      s9, a0 # TODO (NEED FREE) s9 stores the m1's rows pointer address
+    li      a0, 4
+    jal     ra, malloc  # return the pointer to the num of column of m1
+    beqz    a0, malloc_error
+    mv      s8, a0 # TODO (NEED FREE) s8 stores the m1's column pointer address
+    # read matrix
+    lw      a0, 8(s1) # a[2]
+    mv      a1, s9 # rows address
+    mv      a2, s8 # columns address
     jal     ra, read_matrix
-    mv      s3, a0 # m1 matrix address
-    lw      t3, 0(sp)
-    lw      t4, 4(sp)
+    mv      s3, a0 # TODO (NEED FREE) s3 stores m1's matrix address
 
 	# Read input matrix, locate at address (a1 + 12)
-    lw      a0, 12(s1)
-    mv      a1, sp # rows
-    addi    a2, sp, 4 # columns
+    li      a0, 4
+    jal     ra, malloc  # return the pointer to the num of rows of input
+    beqz    a0, malloc_error
+    mv      s7, a0 # TODO (NEED FREE) s7 stores the input's rows pointer address
+    li      a0, 4
+    jal     ra, malloc  # return the pointer to the num of column of input
+    beqz    a0, malloc_error
+    mv      s6, a0 # TODO (NEED FREE) s6 stores the input's column pointer address
+    # read matrix
+    lw      a0, 12(s1) # a[3]
+    mv      a1, s7 # rows address
+    mv      a2, s6 # columns address
     jal     ra, read_matrix
-    mv      s3, a0 # input matrix address
-    lw      t5, 0(sp)
-    lw      t6, 4(sp)
+    mv      s4, a0 # TODO (NEED FREE) s4 stores input's matrix address
 
 	# Compute h = matmul(m0, input)
+    lw      t0, 0(s11) # m0 rows
+    lw      t3, 0(s6) # input columns 
     # malloc
-    mul     t0, t1, t6 # output size (t1,t2)x(t5,t6) = (t1,t6)
-    slli    a0, t0, 2 # 4-bytes per element
+    mul     t4, t0, t3 # 'h' size (s11,s10)x(s7,s6) = (s11,s6)
+    sw      t4, 8(sp)
+    slli    a0, t4, 2 # 4-bytes per element
     jal     ra, malloc
     beqz    a0, malloc_error
-    mv      s5, a0 # store the pointer h
-    sw      s5, 0(sp) # h, prepare for free
+    sw      a0, 0(sp) # TODO (NEED FREE) 'h'
+
     # matmul
-    mv      a6, a0
+    lw      a6, 0(sp) # store result in 'h'
     mv      a0, s2
-    mv      a1, t1
-    mv      a2, t2
+    lw      a1, 0(s11)
+    lw      a2, 0(s10)
     mv      a3, s4
-    mv      a4, t5
-    mv      a5, t6
+    lw      a4, 0(s7)
+    lw      a5, 0(s6)
     jal     ra, matmul
 
+
 	# Compute h = relu(h)
-    mv      a0, s5 # h
-    mv      a1, t0 # output size
+    lw      a0, 0(sp) # 'h'
+    lw      a1, 8(sp) # 'h' size
     jal     ra, relu
 
 	# Compute o = matmul(m1, h)
+    lw      t0, 0(s9) # m1 rows
+    lw      t3, 0(s6) # 'h' columns
     # malloc
-    mul     t0, t3, t6 # output size (t3,t4)x(t1,t6) = (t3,t6)
-    slli    a0, t0, 2 # 4-bytes per element
+    mul     t4, t0, t3 # output size (s9,s8)x(s11,s6) = (s9,s6)
+    sw      t4, 8(sp)
+    slli    a0, t4, 2 # 4-bytes per element
     jal     ra, malloc
     beqz    a0, malloc_error
-    mv      s5, a0 # store the pointer o
-    sw      s5, 4(sp) # o, prepare for free
+    sw      a0, 4(sp) # TODO (NEED FREE) 'o'
+
     # matmul
-    mv      a6, a0
+    lw      a6, 4(sp)
     mv      a0, s3
-    mv      a1, t3
-    mv      a2, t4
-    mv      a3, s5
-    mv      a4, t1
-    mv      a5, t6
+    lw      a1, 0(s9)
+    lw      a2, 0(s8)
+    lw      a3, 0(sp)
+    lw      a4, 0(s11)
+    lw      a5, 0(s6)
     jal     ra, matmul
 
 	# Write output matrix o
-    lw      a0, 16(s1)
-    mv      a1, s5
-    mv      a2, t3
-    mv      a3, t6
+    lw      a0, 16(s1) # a[4]
+    lw      a1, 4(sp)
+    lw      a2, 0(s9)
+    lw      a3, 0(s6)
     jal     ra, write_matrix
 
 	# Compute and return argmax(o)
-    mv      a0, s5
-    mv      a1, t0
+    lw      a0, 4(sp)
+    lw      a1, 8(sp)
     jal     ra, argmax
-    mv      t4, a0 # save return value of argmax
+    sw      a0, 8(sp) # save return value of argmax
 
 	# If enabled, print argmax(o) and newline
-    bne     s0, a2, done
-    mv      a0, t4
+    bne     s0, x0, done
+    lw      a0, 8(sp)
     jal     ra, print_int
-
     # finish
     li      a0, '\n'
     jal     ra, print_char
@@ -155,6 +188,7 @@ done:
     # free pointer 'o'
     lw      a0, 4(sp)
     jal     ra, free
+
     # free matrix m0
     mv      a0, s2
     jal     ra, free
@@ -165,16 +199,41 @@ done:
     mv      a0, s4
     jal     ra, free
 
-    mv      a0, t4
+    mv      a0, s11
+    jal     ra, free
+    
+    mv      a0, s10
+    jal     ra, free
 
-    lw      s0, 8(sp)
-    lw      s1, 12(sp)
-    lw      s2, 16(sp)
-    lw      s3, 20(sp)
-    lw      s4, 24(sp)
-    lw      s5, 28(sp)
-    lw      ra, 32(sp)
-    addi    sp, sp, 36
+    mv      a0, s9
+    jal     ra, free
+
+    mv      a0, s8
+    jal     ra, free
+
+    mv      a0, s7
+    jal     ra, free
+
+    mv      a0, s6
+    jal     ra, free
+
+    # return
+    lw      a0, 8(sp)
+
+    lw      s0, 12(sp)
+    lw      s1, 16(sp)
+    lw      s2, 20(sp)
+    lw      s3, 24(sp)
+    lw      s4, 28(sp)
+    lw      s5, 32(sp)
+    lw      s6, 36(sp)
+    lw      s7, 40(sp)
+    lw      s8, 44(sp)
+    lw      s9, 48(sp)
+    lw      s10, 52(sp)
+    lw      s11, 56(sp)
+    lw      ra, 60(sp)
+    addi    sp, sp, 64
 
 	ret
 
