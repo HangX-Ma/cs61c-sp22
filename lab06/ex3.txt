@@ -1,0 +1,9 @@
+Look at the case.png I paint.
+We know the two inputs come from registers separately but simultaneously. 
+To take the two registers value into effect, one CLK-to-Q delay has to be taken into account.
+At this moment, the register after adder block also complete Q update! (This 10ns will be ignored)
+We also spend the propagation delay of an adder block and a multiplication block. 
+A setup time is needed for the register after the adder block.
+
+Therefore, the minimum clock cycle will be as follow:
+    10(CLK-to-Q) + 60(Mul) + 45(Add) + 10(setup) = 125ns

@@ -1,0 +1,2 @@
+10(CLK-to-Q) + 60(max(Mul, Add)) + 10(setup) = 80ns
+1/80ns = 12.5MHz
