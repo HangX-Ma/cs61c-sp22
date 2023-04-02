@@ -12,6 +12,7 @@ This repository records the study progress of CS 61C course. You can take a refe
 - [x] Lab 4: RISC-V Functions, Pointers ([Link](https://inst.eecs.berkeley.edu/~cs61c/sp22/labs/lab04/))
 - [x] Lab 5: Logisim ([Link](https://inst.eecs.berkeley.edu/~cs61c/sp22/labs/lab05/))
 - [x] Lab 6: CPU, Pipelining ([Link](https://inst.eecs.berkeley.edu/~cs61c/sp22/labs/lab06/))
+- [x] Lab 7: Caches ([Link](https://inst.eecs.berkeley.edu/~cs61c/sp22/labs/lab07/))
 
 ## Projects
 
