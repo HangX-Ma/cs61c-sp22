@@ -60,6 +60,13 @@ class TestAbsLoss(TestCase):
         t.execute()
 
     # Add other test cases if neccesary
+    def test_abs_loss_length_failed(self):
+        t = AssemblyTest(self, "../coverage-src/abs_loss.s")
+        # input the length of the desired array
+        t.input_scalar("a2", 0)
+        # call the `initialize_zero` function
+        t.call("abs_loss")
+        t.execute(code=36)
 
     @classmethod
     def tearDownClass(cls):
@@ -115,6 +122,13 @@ class TestSquaredLoss(TestCase):
         t.execute()
 
     # Add other test cases if neccesary
+    def test_squared_loss_length_failed(self):
+        t = AssemblyTest(self, "../coverage-src/squared_loss.s")
+        # input the length of the desired array
+        t.input_scalar("a2", 0)
+        # call the `initialize_zero` function
+        t.call("squared_loss")
+        t.execute(code=36)
 
     @classmethod
     def tearDownClass(cls):
@@ -168,6 +182,13 @@ class TestZeroOneLoss(TestCase):
         t.execute()
 
     # Add other test cases if neccesary
+    def test_zero_one_loss_length_failed(self):
+        t = AssemblyTest(self, "../coverage-src/zero_one_loss.s")
+        # input the length of the desired array
+        t.input_scalar("a2", 0)
+        # call the `initialize_zero` function
+        t.call("zero_one_loss")
+        t.execute(code=36)
 
     @classmethod
     def tearDownClass(cls):
@@ -204,7 +225,24 @@ class TestInitializeZero(TestCase):
         t.execute()
 
     # Add other test cases if neccesary
-
+    def test_initialize_zero_malloc_failed(self):
+        t = AssemblyTest(self, "../coverage-src/initialize_zero.s")
+        # input the length of the desired array
+        t.input_scalar("a0", 6)
+        # call the `initialize_zero` function
+        t.call("initialize_zero")
+        # check that the register a0 contains the correct array (hint: look at the check_array_pointer function in framework.py)
+        t.check_array_pointer("a0", [0, 0, 0, 0, 0, 0])
+        t.execute(fail="malloc", code=26)
+        
+    def test_initialize_zero_length_fail(self):
+        t = AssemblyTest(self, "../coverage-src/initialize_zero.s")
+        # input the length of the desired array
+        t.input_scalar("a0", 0)
+        # call the `initialize_zero` function
+        t.call("initialize_zero")
+        t.execute(code=36)
+        
     @classmethod
     def tearDownClass(cls):
         print_coverage("initialize_zero.s", verbose=False)
