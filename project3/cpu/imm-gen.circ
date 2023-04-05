@@ -377,7 +377,7 @@
     </comp>
     <comp lib="0" loc="(280,960)" name="Tunnel">
       <a name="facing" val="east"/>
-      <a name="label" val="J_bit20"/>
+      <a name="label" val="J_bit31"/>
     </comp>
     <comp lib="0" loc="(320,560)" name="Tunnel">
       <a name="facing" val="south"/>
