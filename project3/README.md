@@ -2,7 +2,7 @@
 
 It's strange I can't pass the `test_integration_mem` test. It drives me crazy!
 
-My custom Mem-type checker also occurs error at specific scenarios. My design can pass the following test. However, if I remove the `lw t1, 0(sp)`, the self designed CPU will be trapped.
+My custom Mem-type checker also occurs errors at specific scenarios. My design can pass the following test. However, if I remove the `lw t1, 0(sp)`, the self designed CPU will get trapped.
 
 ```asm
 addi s0, x0, 1
