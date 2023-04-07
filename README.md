@@ -13,6 +13,11 @@ This repository records the study progress of CS 61C course. You can take a refe
 - [x] Lab 5: Logisim ([Link](https://inst.eecs.berkeley.edu/~cs61c/sp22/labs/lab05/))
 - [x] Lab 6: CPU, Pipelining ([Link](https://inst.eecs.berkeley.edu/~cs61c/sp22/labs/lab06/))
 - [x] Lab 7: Caches ([Link](https://inst.eecs.berkeley.edu/~cs61c/sp22/labs/lab07/))
+- [x] Lab 8: SIMD Instructions ([Link](https://inst.eecs.berkeley.edu/~cs61c/sp22/labs/lab08/)) 
+- [x] Lab 9: Thread-Level Parallelism ([Link](https://inst.eecs.berkeley.edu/~cs61c/sp22/labs/lab09/)) 
+- [x] Lab 10: Virtual Memory([Link](https://inst.eecs.berkeley.edu/~cs61c/sp22/labs/lab10/)) 
+
+> Note: Lab 10 actually take a reference of sp21 Lab08 [[OS (context switch), I/O, DMA, Disks, Networking & Virtual Memory](https://inst.eecs.berkeley.edu/~cs61c/sp21/labs/lab08/)]
 
 ## Projects
 
