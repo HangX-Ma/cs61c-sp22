@@ -26,6 +26,10 @@
  * __m256d _mm256_max_pd (__m256d a, __m256d b)
 */
 
+#define BASIC_OPERATION (0)
+#define SIMD_OPERATION  (1)
+#define OMP_OPERATION   (0)
+
 /* Generates a random double between low and high */
 double rand_double(double low, double high) {
     double range = (high - low);
@@ -185,11 +189,26 @@ int allocate_matrix_ref(matrix **mat, matrix *from, int offset, int rows, int co
  */
 void fill_matrix(matrix *mat, double val) {
     // Task 1.5 TODO
+#if BASIC_OPERATION
     for (int i = 0; i < mat->rows; i++) {
         for (int j = 0; j < mat->cols; j++) {
             set(mat, i, j, val);
         }
     }
+#elif SIMD_OPERATION
+    __m256d vec = _mm256_set1_pd(val);
+    unsigned int truncated_mat_size = mat->rows * mat->cols / 4 * 4;
+    for (int i = 0; i < truncated_mat_size; i += 4) {
+        _mm256_storeu_pd(mat->data + i, vec);
+    }
+
+    for (int i = truncated_mat_size; i < mat->rows * mat->cols; i++) {
+        *(mat->data + i) = val;
+    }
+
+#elif OMP_OPERATION
+#endif
+
 }
 
 /*
@@ -199,14 +218,34 @@ void fill_matrix(matrix *mat, double val) {
  */
 int abs_matrix(matrix *result, matrix *mat) {
     // Task 1.5 TODO
+#if BASIC_OPERATION
     for (int i = 0; i < result->rows; i++) {
         for (int j = 0; j < result->cols; j++) {
             set(result, i, j, abs(get(mat, i, j)));
         }
     }
+#elif SIMD_OPERATION
+    __m256d _zero = _mm256_set1_pd(0);
+    unsigned int truncated_mat_size = mat->rows * mat->cols / 4 * 4;
+    for (int i = 0; i < truncated_mat_size; i += 4) {
+        __m256d _vec     = _mm256_loadu_pd(mat->data + i);
+        __m256d _sub_vec = _mm256_sub_pd(_zero, _vec); 
+        __m256d _abs_vec = _mm256_max_pd(_sub_vec, _vec);
+        _mm256_storeu_pd(result->data + i, _abs_vec);
+    }
 
+    for (int i = truncated_mat_size; i < mat->rows * mat->cols; i++) {
+        double _val = *(mat->data + i);
+        if (_val < 0) {
+            _val = -_val;
+        }
+        *(result->data + i) = _val;
+    }
+#elif OMP_OPERATION
+#endif
     return 0;
 }
+
 
 /*
  * (OPTIONAL)
@@ -216,12 +255,26 @@ int abs_matrix(matrix *result, matrix *mat) {
  */
 int neg_matrix(matrix *result, matrix *mat) {
     // Task 1.5 TODO
+#if BASIC_OPERATION
     for (int i = 0; i < result->rows; i++) {
         for (int j = 0; j < result->cols; j++) {
             set(result, i, j, -get(mat, i, j));
         }
     }
+#elif SIMD_OPERATION
+    __m256d _zero = _mm256_set1_pd(0);
+    unsigned int truncated_mat_size = mat->rows * mat->cols / 4 * 4;
+    for (int i = 0; i < truncated_mat_size; i += 4) {
+        __m256d _vec     = _mm256_loadu_pd(mat->data + i);
+        __m256d _sub_vec = _mm256_sub_pd(_zero, _vec); 
+        _mm256_storeu_pd(result->data + i, _sub_vec);
+    }
 
+    for (int i = truncated_mat_size; i < mat->rows * mat->cols; i++) {
+        *(mat->data + i) = -*(mat->data + i);
+    }
+#elif OMP_OPERATION
+#endif
     return 0;
 }
 
@@ -233,12 +286,26 @@ int neg_matrix(matrix *result, matrix *mat) {
  */
 int add_matrix(matrix *result, matrix *mat1, matrix *mat2) {
     // Task 1.5 TODO
+#if BASIC_OPERATION
     for (int i = 0; i < result->rows; i++) {
         for (int j = 0; j < result->cols; j++) {
             set(result, i, j, get(mat2, i, j) + get(mat1, i, j));
         }
     }
+#elif SIMD_OPERATION
+    unsigned int truncated_mat_size = result->cols / 4 * 4;
+    for (int i = 0; i < truncated_mat_size; i += 4) {
+        __m256d _vec1    = _mm256_loadu_pd(mat1->data + i);
+        __m256d _vec2    = _mm256_loadu_pd(mat2->data + i);
+        __m256d _add_vec = _mm256_add_pd(_vec1, _vec2);
+        _mm256_storeu_pd(result->data + i, _add_vec);
+    }
 
+    for (int i = truncated_mat_size * result->rows; i < result->rows * result->cols; i++) {
+        *(result->data + i) = *(mat1->data + i) + *(mat2->data + i);
+    }
+#elif OMP_OPERATION
+#endif
     return 0;
 }
 
@@ -251,12 +318,26 @@ int add_matrix(matrix *result, matrix *mat1, matrix *mat2) {
  */
 int sub_matrix(matrix *result, matrix *mat1, matrix *mat2) {
     // Task 1.5 TODO
+#if BASIC_OPERATION
     for (int i = 0; i < result->rows; i++) {
         for (int j = 0; j < result->cols; j++) {
             set(result, i, j, get(mat2, i, j) - get(mat1, i, j));
         }
     }
+#elif SIMD_OPERATION
+    unsigned int truncated_mat_size = result->cols / 4 * 4;
+    for (int i = 0; i < truncated_mat_size; i += 4) {
+        __m256d _vec1    = _mm256_loadu_pd(mat1->data + i);
+        __m256d _vec2    = _mm256_loadu_pd(mat2->data + i);
+        __m256d _sub_vec = _mm256_sub_pd(_vec1, _vec2);
+        _mm256_storeu_pd(result->data + i, _sub_vec);
+    }
 
+    for (int i = truncated_mat_size * result->rows; i < result->rows * result->cols; i++) {
+        *(result->data + i) = *(mat1->data + i) - *(mat2->data + i);
+    }
+#elif OMP_OPERATION
+#endif
     return 0;
 }
 
@@ -269,6 +350,7 @@ int sub_matrix(matrix *result, matrix *mat1, matrix *mat2) {
  */
 int mul_matrix(matrix *result, matrix *mat1, matrix *mat2) {
     // Task 1.6 TODO
+#if BASIC_OPERATION
     for (int i = 0; i < result->rows; i++) {
         for (int j = 0; j < result->cols; j++) {
             int mul_sum = 0;
@@ -278,7 +360,39 @@ int mul_matrix(matrix *result, matrix *mat1, matrix *mat2) {
             set(result, i, j, mul_sum);
         }
     }
+#elif SIMD_OPERATION
+    // transpose the 2nd matrix
+    matrix *mat2_tr = NULL;
+    allocate_matrix(&mat2_tr, mat2->cols, mat2->rows);
+    for (int i = 0; i < mat2->rows; i++) {
+        for (int j = 0; j < mat2->cols; j++) {
+            set(mat2_tr, j, i, get(mat2, i, j));
+        }
+    }
 
+    /* Calculate dot product */
+    double sum_arr[4];
+    for (int i = 0; i < mat1->rows; i++) {
+        for (int j = 0; j < mat2_tr->rows; j++) {
+            double sum = 0.0;
+            int k = 0;
+            unsigned int truncated_cols_size = mat2_tr->cols / 4 * 4;
+            for (; k < truncated_cols_size; k += 4) {
+                __m256d _vec1    = _mm256_loadu_pd(mat1->data + i * mat1->cols + k);
+                __m256d _vec2    = _mm256_loadu_pd(mat2_tr->data + j * mat2_tr->cols + k);
+                __m256d _mul_vec = _mm256_mul_pd(_vec1, _vec2);
+                _mm256_storeu_pd(sum_arr, _mul_vec);
+                sum += sum_arr[0] + sum_arr[1] + sum_arr[2] + sum_arr[3];
+            }
+            /* tail */
+            for (; k < mat2_tr->cols; k++) {
+                sum += get(mat1, i, k) * get(mat2_tr, j, k);
+            }
+            set(result, i, j, sum);
+        }
+    }
+#elif OMP_OPERATION
+#endif
     return 0;
 }
 
