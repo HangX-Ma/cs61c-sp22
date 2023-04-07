@@ -49,6 +49,7 @@ void rand_matrix(matrix *result, unsigned int seed, double low, double high) {
  */
 double get(matrix *mat, int row, int col) {
     // Task 1.1 TODO
+    return *(mat->data + row * mat->cols + col);
 }
 
 /*
@@ -57,6 +58,7 @@ double get(matrix *mat, int row, int col) {
  */
 void set(matrix *mat, int row, int col, double val) {
     // Task 1.1 TODO
+    *(mat->data + row * mat->cols + col) = val;
 }
 
 /*
@@ -79,6 +81,28 @@ int allocate_matrix(matrix **mat, int rows, int cols) {
     // 6. Set the `ref_cnt` field to 1.
     // 7. Store the address of the allocated matrix struct at the location `mat` is pointing at.
     // 8. Return 0 upon success.
+    if (rows < 1 || cols < 1) {
+        return -1;
+    }
+
+    matrix* new_mat = (matrix *)malloc(sizeof(matrix));
+    if (new_mat == NULL) {
+        return -2;
+    }
+
+    new_mat->data = (double *)calloc(rows * cols, sizeof(double));
+    if (new_mat->data == NULL) {
+        return -2;
+    }
+
+    new_mat->rows = rows;
+    new_mat->cols = cols;
+    new_mat->parent = NULL;
+    new_mat->ref_cnt = 1;
+
+    *mat = new_mat;
+
+    return 0;
 }
 
 /*
@@ -92,6 +116,25 @@ void deallocate_matrix(matrix *mat) {
     // 1. If the matrix pointer `mat` is NULL, return.
     // 2. If `mat` has no parent: decrement its `ref_cnt` field by 1. If the `ref_cnt` field becomes 0, then free `mat` and its `data` field.
     // 3. Otherwise, recursively call `deallocate_matrix` on `mat`'s parent, then free `mat`.
+    if (mat == NULL) {
+        return;
+    }
+
+    if (mat->parent == NULL) {
+        mat->ref_cnt--;
+
+        if (mat->ref_cnt == 0) {
+            free(mat->data);
+            free(mat);
+            mat->data = NULL;
+            mat = NULL;
+        }
+    } else {
+        deallocate_matrix(mat->parent);
+        free(mat);
+        mat = NULL;
+    }
+
 }
 
 /*
@@ -117,6 +160,24 @@ int allocate_matrix_ref(matrix **mat, matrix *from, int offset, int rows, int co
     // 6. Increment the `ref_cnt` field of the `from` struct by 1.
     // 7. Store the address of the allocated matrix struct at the location `mat` is pointing at.
     // 8. Return 0 upon success.
+    if (rows < 1 || cols < 1) {
+        return -1;
+    }
+
+    matrix *new_matrix = (matrix *)malloc(sizeof(matrix));
+    if (new_matrix == NULL) {
+        return -2;
+    }
+
+    new_matrix->data = from->data + offset;
+    new_matrix->rows = rows;
+    new_matrix->cols = cols;
+    new_matrix->parent = from;
+    from->ref_cnt++;
+
+    *mat = new_matrix;
+
+    return 0;
 }
 
 /*
@@ -124,6 +185,11 @@ int allocate_matrix_ref(matrix **mat, matrix *from, int offset, int rows, int co
  */
 void fill_matrix(matrix *mat, double val) {
     // Task 1.5 TODO
+    for (int i = 0; i < mat->rows; i++) {
+        for (int j = 0; j < mat->cols; j++) {
+            set(mat, i, j, val);
+        }
+    }
 }
 
 /*
@@ -133,6 +199,13 @@ void fill_matrix(matrix *mat, double val) {
  */
 int abs_matrix(matrix *result, matrix *mat) {
     // Task 1.5 TODO
+    for (int i = 0; i < result->rows; i++) {
+        for (int j = 0; j < result->cols; j++) {
+            set(result, i, j, abs(get(mat, i, j)));
+        }
+    }
+
+    return 0;
 }
 
 /*
@@ -143,6 +216,13 @@ int abs_matrix(matrix *result, matrix *mat) {
  */
 int neg_matrix(matrix *result, matrix *mat) {
     // Task 1.5 TODO
+    for (int i = 0; i < result->rows; i++) {
+        for (int j = 0; j < result->cols; j++) {
+            set(result, i, j, -get(mat, i, j));
+        }
+    }
+
+    return 0;
 }
 
 /*
@@ -153,6 +233,13 @@ int neg_matrix(matrix *result, matrix *mat) {
  */
 int add_matrix(matrix *result, matrix *mat1, matrix *mat2) {
     // Task 1.5 TODO
+    for (int i = 0; i < result->rows; i++) {
+        for (int j = 0; j < result->cols; j++) {
+            set(result, i, j, get(mat2, i, j) + get(mat1, i, j));
+        }
+    }
+
+    return 0;
 }
 
 /*
@@ -164,6 +251,13 @@ int add_matrix(matrix *result, matrix *mat1, matrix *mat2) {
  */
 int sub_matrix(matrix *result, matrix *mat1, matrix *mat2) {
     // Task 1.5 TODO
+    for (int i = 0; i < result->rows; i++) {
+        for (int j = 0; j < result->cols; j++) {
+            set(result, i, j, get(mat2, i, j) - get(mat1, i, j));
+        }
+    }
+
+    return 0;
 }
 
 /*
@@ -175,6 +269,17 @@ int sub_matrix(matrix *result, matrix *mat1, matrix *mat2) {
  */
 int mul_matrix(matrix *result, matrix *mat1, matrix *mat2) {
     // Task 1.6 TODO
+    for (int i = 0; i < result->rows; i++) {
+        for (int j = 0; j < result->cols; j++) {
+            int mul_sum = 0;
+            for (int idx = 0; idx < result->cols; idx++) {
+                mul_sum += get(mat1, i, idx) * get(mat2, idx, j);
+            }
+            set(result, i, j, mul_sum);
+        }
+    }
+
+    return 0;
 }
 
 /*
@@ -186,4 +291,28 @@ int mul_matrix(matrix *result, matrix *mat1, matrix *mat2) {
  */
 int pow_matrix(matrix *result, matrix *mat, int pow) {
     // Task 1.6 TODO
+    // Create matrix E
+    if (pow == 0) {
+        for (size_t i = 0; i < result->rows; i++) {
+            set(result, i, i, 1);
+        } 
+    }
+
+    matrix *zero_mat = NULL;
+    allocate_matrix(&zero_mat, result->rows, result->rows);
+    fill_matrix(zero_mat, 0);
+    add_matrix(result, zero_mat, mat);
+
+    if (pow == 1) {
+        return 0;
+    }
+
+    matrix *tmp_mat = NULL;
+    allocate_matrix(&tmp_mat, result->rows, result->rows);
+    for (size_t i = 0; i < pow - 1; i++) {
+        mul_matrix(tmp_mat, result, mat);
+        add_matrix(result, zero_mat, tmp_mat);
+    }
+
+    return 0;
 }

@@ -266,3 +266,5 @@ $RECYCLE.BIN/
 
 files.txt
 
+.vscode-ctags
+.vscode/
