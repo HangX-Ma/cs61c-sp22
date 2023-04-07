@@ -28,7 +28,6 @@
 
 #define BASIC_OPERATION (0)
 #define SIMD_OPERATION  (1)
-#define OMP_OPERATION   (0)
 
 /* Generates a random double between low and high */
 double rand_double(double low, double high) {
@@ -198,15 +197,14 @@ void fill_matrix(matrix *mat, double val) {
 #elif SIMD_OPERATION
     __m256d vec = _mm256_set1_pd(val);
     unsigned int truncated_mat_size = mat->rows * mat->cols / 4 * 4;
+    #pragma omp parallel for
     for (int i = 0; i < truncated_mat_size; i += 4) {
         _mm256_storeu_pd(mat->data + i, vec);
     }
 
     for (int i = truncated_mat_size; i < mat->rows * mat->cols; i++) {
         *(mat->data + i) = val;
-    }
-
-#elif OMP_OPERATION
+    }   
 #endif
 
 }
@@ -227,6 +225,7 @@ int abs_matrix(matrix *result, matrix *mat) {
 #elif SIMD_OPERATION
     __m256d _zero = _mm256_set1_pd(0);
     unsigned int truncated_mat_size = mat->rows * mat->cols / 4 * 4;
+
     for (int i = 0; i < truncated_mat_size; i += 4) {
         __m256d _vec     = _mm256_loadu_pd(mat->data + i);
         __m256d _sub_vec = _mm256_sub_pd(_zero, _vec); 
@@ -241,7 +240,6 @@ int abs_matrix(matrix *result, matrix *mat) {
         }
         *(result->data + i) = _val;
     }
-#elif OMP_OPERATION
 #endif
     return 0;
 }
@@ -273,7 +271,6 @@ int neg_matrix(matrix *result, matrix *mat) {
     for (int i = truncated_mat_size; i < mat->rows * mat->cols; i++) {
         *(mat->data + i) = -*(mat->data + i);
     }
-#elif OMP_OPERATION
 #endif
     return 0;
 }
@@ -304,7 +301,6 @@ int add_matrix(matrix *result, matrix *mat1, matrix *mat2) {
     for (int i = truncated_mat_size * result->rows; i < result->rows * result->cols; i++) {
         *(result->data + i) = *(mat1->data + i) + *(mat2->data + i);
     }
-#elif OMP_OPERATION
 #endif
     return 0;
 }
@@ -336,7 +332,6 @@ int sub_matrix(matrix *result, matrix *mat1, matrix *mat2) {
     for (int i = truncated_mat_size * result->rows; i < result->rows * result->cols; i++) {
         *(result->data + i) = *(mat1->data + i) - *(mat2->data + i);
     }
-#elif OMP_OPERATION
 #endif
     return 0;
 }
@@ -364,6 +359,8 @@ int mul_matrix(matrix *result, matrix *mat1, matrix *mat2) {
     // transpose the 2nd matrix
     matrix *mat2_tr = NULL;
     allocate_matrix(&mat2_tr, mat2->cols, mat2->rows);
+
+    #pragma omp parallel for
     for (int i = 0; i < mat2->rows; i++) {
         for (int j = 0; j < mat2->cols; j++) {
             set(mat2_tr, j, i, get(mat2, i, j));
@@ -391,7 +388,6 @@ int mul_matrix(matrix *result, matrix *mat1, matrix *mat2) {
             set(result, i, j, sum);
         }
     }
-#elif OMP_OPERATION
 #endif
     return 0;
 }
@@ -407,6 +403,7 @@ int pow_matrix(matrix *result, matrix *mat, int pow) {
     // Task 1.6 TODO
     // Create matrix E
     if (pow == 0) {
+        #pragma omp parallel for
         for (size_t i = 0; i < result->rows; i++) {
             set(result, i, i, 1);
         } 
@@ -423,6 +420,7 @@ int pow_matrix(matrix *result, matrix *mat, int pow) {
 
     matrix *tmp_mat = NULL;
     allocate_matrix(&tmp_mat, result->rows, result->rows);
+
     for (size_t i = 0; i < pow - 1; i++) {
         mul_matrix(tmp_mat, result, mat);
         add_matrix(result, zero_mat, tmp_mat);
