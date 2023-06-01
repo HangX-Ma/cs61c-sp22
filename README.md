@@ -1,6 +1,7 @@
 # Great Ideas in Computer Architecture (Machine Structures) CS 61C Spring 2022
 
 This repository records the study progress of CS 61C course. You can take a reference but don't plagiarize the codes for your own study tasks.
+> :star2: This course has been fully uploaded and all assignments have been finished.
 
 ## Labs
 
